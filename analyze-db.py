@@ -198,7 +198,7 @@ def print_hot_db_row(database, total, read, write):
         print(" %-25s %10s %10s %10s" % (database, total, read, write) )
 
 def print_hot_db_results():
-    hot_dbs = result_db.hottest_dbs.find({'timestamp':timestamp}, {'_id':0}).sort('db_load_percent',-1)
+    hot_dbs = result_db.hottest_dbs.find({'timestamp':timestamp, 'db_load_percent':{'$gt':0}}, {'_id':0}).sort('db_load_percent',-1)
 
     print_hot_db_row("Database", "CPU", "CPU Read", "CPU Write")
     print_hot_db_row("--------", "---------", "---------", "---------")
@@ -217,8 +217,10 @@ def print_hot_db_results():
     print_hot_db_row("--------", "---------", "---------", "---------")
 
     for total in db_total_cpu:
-        print_hot_db_row("Total", str( round(total['total'], 2) ) + '%', str(total['read_total']) + '%', str(total['write_total']) + '%' )
-
+        total_cpu = str( round(total['total'], 2) ) + '%'
+        read_total = str(round(total['read_total'], 2) ) + '%'
+        write_total = str( round(total['write_total'], 2) ) + '%'
+        print_hot_db_row("Total", total_cpu, read_total , write_total )
 
 analyze_db_cache()
 print_db_cache_results()
