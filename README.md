@@ -1,6 +1,6 @@
 # MongoDB Database Statistics
 
-MongoDB provides detailed statistics at the collection level via its [collStats](https://docs.mongodb.com/manual/reference/command/collStats/#dbcmd.collStats) and [top](https://docs.mongodb.com/manual/reference/command/top/) commands. The Compass [Performance](http://docs.mongodb.com/compass/master/performance/) will even show you the Hottest Collections:
+MongoDB provides detailed statistics at the collection level via its [collStats](https://docs.mongodb.com/manual/reference/command/collStats/#dbcmd.collStats) and [top](https://docs.mongodb.com/manual/reference/command/top/) commands. The Compass [Performance](http://docs.mongodb.com/compass/master/performance/) tab will even show you the Hottest Collections:
 
 ![Hottest Collections](images/hottest_collections.png)
 
