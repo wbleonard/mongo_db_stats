@@ -97,7 +97,7 @@ def print_db_cache_results():
 # https://github.com/mongodb-js/compass-serverstats/blob/master/src/stores/top-store.js#L86
 def analyze_db_cpu():
 
-    print("\nCalculting Hottest DBs...\n")
+    print("\nCalculating Hottest DBs...\n")
 
     admin_db = client['admin']
 
