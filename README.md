@@ -39,3 +39,8 @@ Calculting Hottest DBs...
 
 Analysis Complete
 ```
+
+Note the script also persists its findings back to a `dbstats` database, which allows for historical analysis. For example, you can use [MongoDB Charts](https://www.mongodb.com/products/charts) to graph the results over time:
+
+![Cache Use Over Time by Database](images/cache_chart.png)
+
