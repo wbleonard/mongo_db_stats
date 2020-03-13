@@ -8,10 +8,12 @@ from pymongo import MongoClient
 
 print("\nMongoDB Database Stats\n")
 
-# Establish connection to Atlas
-client = MongoClient(params.conn_string)
-db = client[params.database]
-result_db = client['db_stats']
+# Establish connections to Atlas
+target_client = MongoClient(params.target_conn_string)
+
+result_client = MongoClient(params.results_conn_string)
+result_db = result_client[params.results_database]
+
 timestamp = datetime.datetime.now()
 
 # Set up PrettyPrinter
@@ -24,7 +26,7 @@ def analyze_db_cache():
 
     print("Analyzing Database Cache Use...\n")
 
-    dbNames = client.list_database_names()
+    dbNames = target_client.list_database_names()
 
     for dbName in dbNames:
 
@@ -33,7 +35,7 @@ def analyze_db_cache():
         result['collections'] = []
         result['timestamp'] = timestamp
 
-        db = client[dbName]
+        db = target_client[dbName]
         dbCacheBytes = 0
 
         collsCursor = db.list_collections()
@@ -99,7 +101,7 @@ def analyze_db_cpu():
 
     print("\nCalculating Hottest DBs...\n")
 
-    admin_db = client['admin']
+    admin_db = target_client['admin']
 
     totals = admin_db.command("top")['totals']
   
