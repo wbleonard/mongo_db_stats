@@ -11,6 +11,10 @@ print("\nMongoDB Database Stats\n")
 # Establish connections to Atlas
 target_client = MongoClient(params.target_conn_string)
 
+# Get target cluster name
+admin_db = target_client ['admin']
+target_cluster_name = admin_db.command({'replSetGetStatus' :1})["set"]
+
 result_client = MongoClient(params.results_conn_string)
 result_db = result_client[params.results_database]
 
@@ -24,12 +28,13 @@ result = {}
 
 def analyze_db_cache():
 
-    print("Analyzing Database Cache Use...\n")
+    print("Analyzing Database Cache Use for Cluster '" + target_cluster_name + "'...\n")
 
     dbNames = target_client.list_database_names()
 
     for dbName in dbNames:
 
+        result['cluster_name'] = target_cluster_name
         result['db'] = dbName
         result['db_cache_bytes'] = 0
         result['collections'] = []
@@ -99,7 +104,7 @@ def print_db_cache_results():
 # https://github.com/mongodb-js/compass-serverstats/blob/master/src/stores/top-store.js#L86
 def analyze_db_cpu():
 
-    print("\nCalculating Hottest DBs...\n")
+    print("\nCalculating Hottest DBs for Cluster '" + target_cluster_name + "'...\n")
 
     admin_db = target_client['admin']
 
@@ -187,6 +192,7 @@ def analyze_db_cpu():
     result = {}
 
     for db_name in db_percent:
+        result['cluster_name'] = target_cluster_name
         result['db'] = db_name
         result['db_load_percent'] = db_percent[db_name]['loadPercent']
         result['db_read_percent'] = db_percent[db_name]['readPercent']
