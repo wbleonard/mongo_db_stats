@@ -99,6 +99,59 @@ def print_db_cache_results():
     for total in db_total_cache:
         print_db_cache_row("Total", round(total['total']/1024/1024, 3) )
 
+def analyze_db_collections():
+    print("Analyzing Database Collection Stats for Cluster '" + target_cluster_name + "'...\n")
+
+    dbNames = target_client.list_database_names()
+
+    for dbName in dbNames:
+
+        result['cluster_name'] = target_cluster_name
+        result['db'] = dbName
+        result['collections'] = []
+        result['timestamp'] = timestamp
+
+        db = target_client[dbName]
+        dbStorageSize = 0
+        dbIndexSize = 0
+
+        collsCursor = db.list_collections()
+
+        for coll in collsCursor:
+
+            if coll["type"] == "collection":
+
+                collName = coll['name']
+
+                stats = db.command("collstats", collName)
+
+                collStats = {}
+
+                try:
+                    collStats['collection_name'] = collName
+                    collStats['numberOfDocuments'] = stats["count"]
+                    collStats['averageDocumentSize'] = stats["avgObjSize"]
+                    collStats['storageSize'] = stats["storageSize"]
+                    collStats['freeStorageSize'] = stats["freeStorageSize"]
+                    collStats['numberOfIndexes'] = stats["nindexes"]
+                    collStats['totalIndexSize'] = stats["totalIndexSize"]
+
+                    dbStorageSize = dbStorageSize + collStats['storageSize']
+                    dbIndexSize = dbIndexSize + collStats['totalIndexSize']
+                    result['collections'].append(collStats)
+                except KeyError:
+                    continue
+
+            # Endif
+        # end collsCursor for
+
+        result['db_storage_size'] = dbStorageSize
+        result['db_index_size'] = dbIndexSize
+        result_db.collection_stats.insert_one(result.copy())
+
+    # end dbNames for
+  # end analyze_db_collections()
+
 
 # Roughly based on hottest collections solution from Compass
 # https://github.com/mongodb-js/compass-serverstats/blob/master/src/stores/top-store.js#L86
@@ -230,6 +283,7 @@ def print_hot_db_results():
         write_total = str( round(total['write_total'], 2) ) + '%'
         print_hot_db_row("Total", total_cpu, read_total , write_total )
 
+analyze_db_collections()
 analyze_db_cache()
 print_db_cache_results()
 analyze_db_cpu()
